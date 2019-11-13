@@ -1,0 +1,49 @@
+/* Chapter 2 - demo - SCAPROC */
+/*  */
+
+
+proc scaproc;
+	record '/opt/sas/Workshop/Exercise/C02/Comments_out.sas' /* Code Analyzer Comments*/
+	grid '/opt/sas/Workshop/Exercise/C02/Grid_out.sas'       /* Grid Exploiting Code */
+	resource "SASApp";                                    /* SAS Server */
+run;
+
+libname orion '/opt/sas/data/OrionStar/ordetail';
+
+data us_cust;
+   set orion.customer;
+   where country='US';
+   age = intck('YEAR',birth_date,today());
+run;
+
+data non_us;
+   set orion.customer;
+   where country ne 'US';
+   age = intck('YEAR',birth_date,today());
+run;
+
+proc freq data=non_us;
+   tables age*gender gender;
+run;
+
+proc freq data=us_cust;
+   tables age*gender gender;
+run;
+
+proc means data=us_cust;
+   var age;
+   class customer_type_ID;
+run;
+
+proc means data=non_us;
+   var age;
+   class customer_type_ID;
+run;
+
+proc freq data=non_us;
+	tables country;
+run;
+
+proc scaproc;
+	write;
+run;
